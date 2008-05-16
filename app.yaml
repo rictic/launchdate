@@ -1,0 +1,13 @@
+application: testapp123555
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /styles
+  static_dir: styles
+- url: /javascript
+  static_dir: javascript
+# 	expiration: 30d 0h
+- url: /.*
+  script: helloworld.py

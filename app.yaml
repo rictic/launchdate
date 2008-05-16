@@ -9,5 +9,7 @@ handlers:
 - url: /javascript
   static_dir: javascript
 # 	expiration: 30d 0h
-- url: /.*
-  script: helloworld.py
+- url: /
+  script: controllers/frontpage.py
+- url: /query/
+  script: controllers/query.py

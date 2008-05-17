@@ -28,7 +28,7 @@
 
 
 import httplib
-from json import demjson
+from json import demjson as json
 from google.appengine.api.urlfetch import fetch, GET, POST
 import urllib
 import cookielib     # Cookie handling
@@ -90,11 +90,10 @@ def read(query, escape=escape):
 #    for row in metaweb.cursor([query]):
 #        print row
 def readiter(query, credentials=credentials, escape=escape):
-   index = 0
    cursor = True
-
+   
    while(cursor):
-       resp = primitive_read(query, escape=escape, cursor=cursor)
+       resp = primitive_read(query=query, escape=escape, cursor=cursor, credentials=credentials)
        if len(resp['result']) == 0: return
        for result in resp['result']: yield result
        cursor = resp['cursor']
@@ -109,15 +108,14 @@ def primitive_read(query, credentials=credentials, escape=escape, cursor=False):
 #        envelope['escape'] = False #        if not escape else escape
 
    # Encode the result
-   encoded = urllib.urlencode({'query': demjson.encode(envelope)})
+   encoded = urllib.urlencode({'query': json.encode(envelope)})
 
    # Build the URL and create a Request object for it
    url = 'http://%s%s?%s' % (host, readservice, encoded)
    headers = {}
    if credentials is not None: headers["Cookie"] = credentials
    resp = fetch(url, method=GET, headers=headers)
-
-   inner = demjson.decode(resp.content)      # Parse JSON response to an object
+   inner = json.decode(resp.content)      # Parse JSON response to an object
 
    # If anything was wrong with the invocation, mqlread will return an HTTP
    # error, and the code above with raise urllib2.HTTPError.

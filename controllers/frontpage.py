@@ -3,16 +3,13 @@ from google.appengine.ext import webapp
 from controllers.base import BaseController
 from models import Query, UserPrefs
     
-        
 
-
-    
 class FrontPage(BaseController):
     def get(self):
         self.c['queries'] = Query.all()
         self.render("index.html")
 
-        
+
 
 def main():
     application = webapp.WSGIApplication(

@@ -1,11 +1,13 @@
 from google.appengine.ext import db
 from freebase_gengine import read, readiter
-from json import demjson
+from json import demjson as json
 from icalendar import Calendar, Event
 from google.appengine.api.users import get_current_user, is_current_user_admin
 from uuid import uuid4 as uuid
+import logging
 
 class JSON(db.TextProperty): pass
+
 #     def make_value_from_datastore(self,value):
 #         return simplejson.json.read(value)
 
@@ -16,17 +18,6 @@ def BlankCalendar():
     cal.add('CALSCALE','GREGORIAN')
     return cal
 
-def _run_query(query):
-    results = readiter(demjson.decode(query))
-    datables = []
-    for result in results:
-        types = result["type"]
-        if type(types) is not list: types = [types]
-        for tipe in types:
-            datable = make_datable(result, tipe)
-            if datable is not None: datables.append(datable)
-    datables.sort()
-    return datables
 
 class MyModel(db.Model):
     def items(self):
@@ -38,13 +29,40 @@ class MyModel(db.Model):
             vals.append(("key", self.key()))
         return vals
     
+    @classmethod
+    def fromParams(self, params):
+        """constructs a member of the class from a request.params object"""
+        args = dict(map(lambda kv: (str(kv[0]),kv[1]), params.items()))
+        return self(**args)
 
+
+def _run_query(query):
+    query = json.decode(query)
+    query[0]["/common/topic/image"] = {"limit":1, "id":None}
+    results = readiter(query)
+    datables = []
+    for result in results:
+        types = result["type"]
+        if type(types) is not list: types = [types]
+        for tipe in types:
+            datable = make_datable(result, tipe)
+            if datable is not None: datables.append(datable)
+    datables.sort()
+    return datables
+
+        
 class Query(MyModel):
-    query = JSON(verbose_name="Query text", required=True, validator=lambda q: _run_query(q)[0])
+    query = JSON(verbose_name="Query text", required=True, validator=lambda q: _run_query(q))
     name = db.StringProperty(required=True)
     owner = db.UserProperty(required=True)
     date_created = db.DateTimeProperty(auto_now_add=True)
     date_modified = db.DateTimeProperty(auto_now=True)
+
+    def __init__(self, *args, **kwargs):
+        if ("owner" not in kwargs):
+            kwargs["owner"] = get_current_user()
+        super(Query, self).__init__(*args, **kwargs)
+
 
     def can_edit(self):
         return is_current_user_admin() or self.owner == get_current_user()
@@ -60,6 +78,8 @@ class Query(MyModel):
             cal.add_component(datable.getEvent())
         
         return cal
+        
+    
 
 class UserPrefs(db.Model):
     user = db.UserProperty(required=True)
@@ -146,6 +166,10 @@ class Datable(object):
         event.add("uid", "http://www.freebase.com/view/guid/%s" % (self.dict['guid'][1:]))
         event.add("dtstart", "%04d%02d%02d" % (year,month,day), encode=0)
         return event
+    
+    def get_thumbnail_url(self):
+        url = "http://www.freebase.com/api/trans/image_thumb/%s?onfail=http://en.wikipedia.org/images/wiki-en.png" % self.dict["/common/topic/image"]["id"]
+        return url
         
 def lexicographic_compare(left,right):
     """does a lexicographic comparison between two entities with lengths and [] methods"""

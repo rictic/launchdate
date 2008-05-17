@@ -1,19 +1,21 @@
 {% if query_error %}
     <p class="form_error">{{ query_error|escape }}</p>
 {% endif %}
-<form action="/view_query/" method="post" accept-charset="utf-8">
+<form action="/query/edit/" method="post" accept-charset="utf-8">
     <p><label for="name">Name: </label><input type="text" name="name" value="{{query.name|escape}}" id="name"/></p>
     <p><label for="query">Query: </label><textarea name="query" id="query" rows="8" cols="40">{{query.query|escape}}</textarea></p>
 
     {% if query.is_saved %}
     <p>
-        Owner: {{ query.owner.nickname }}
+        Owner: {{ query.owner.nickname|escape }}
         <input type="hidden" name="key" value="{{query.key|escape}}" id="key" />
     </p>
     {% endif %}
 
     <p>        
         <input type="submit" name="preview" value="Preview" id="preview" />
-        <input type="submit" value="Save &rarr;"/>
+        {% if query %}
+            <input type="submit" value="Save &rarr;"/>
+        {% endif %}
     </p>
 </form>

@@ -1,0 +1,5 @@
+<ul>
+{% for result in query.run_query %}
+    <li><a href='http://www.freebase.com/view/guid/{{result.guid|escape}}'><img src="{{result.get_thumbnail_url}}"> {{result.name}}</a> – {{result.pretty_date|escape}}</li>
+{% endfor %}
+</ul>

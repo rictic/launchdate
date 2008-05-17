@@ -1,10 +1,8 @@
 {% extends "template.html" %}
 {% block content %}
-    <ul>
-    {% for result in query.run_query %}
-        <li><a href='http://www.freebase.com/view/guid/{{result.guid|escape}}'>{{result.name|escape}}</a> – {{result.pretty_date|escape}}</li>
-    {% endfor %}
-    </ul>
-
-    {% include "_query_form.html" %}
+    {% include "_query_results.html" %}
+    
+    <div>
+        Name – {{query.name}}
+    </div>
 {% endblock %}

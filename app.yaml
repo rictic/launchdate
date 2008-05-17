@@ -11,5 +11,7 @@ handlers:
 # 	expiration: 30d 0h
 - url: /
   script: controllers/frontpage.py
-- url: /query/
+- url: /query/edit/
+  script: controllers/edit_query.py
+- url: /query/view/
   script: controllers/query.py

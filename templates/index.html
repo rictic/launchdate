@@ -19,7 +19,7 @@
         {% endfor %}
     </ul>
     
-    <a href='/view_query/'>Create a new query</a>
+    <a href='/query/edit/'>Create a new query</a>
     
     {% if prefs.subscribedQueries %}
         <h4>Your subscriptions</h4>
@@ -31,15 +31,16 @@
     {% endif %}
     
     <script type="text/javascript" charset="utf-8">
-        post_key_to = function(tosubscribe) {
+        post_key_to = function(subscription_type) {
             return function(){
                 key = this.id;
-                $.post('/query/' + tosubscribe + "/", {"key":key}, function() {;}, function() {alert('unsuccessful!');});
-//                 this.html = tosubscribe + "ed"
+                $.post('/query/' + subscription_type + "/", {"key":key}, function() {this.html = subscription_type + "ed";}, function() {alert('unsuccessful!');});
                 return false; //stop the link from being visited
             }
         }
         $("a.subscribe").click(post_key_to('subscribe'));
         $("a.unsubscribe").click(post_key_to('unsubscribe'));
     </script>
+    
+
 {% endblock %}

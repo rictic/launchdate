@@ -5,16 +5,15 @@ from models import Query, UserPrefs
     
 
 class QueryController(BaseController):
-    """handles queries to /query/"""
     def get(self):
-        """docstring for get"""
-        pass
+        self.c["query"] = Query.get(self.request.params["id"])
+        self.render("view_query.html")
 
 
 
 def main():
     application = webapp.WSGIApplication(
-                                       [('/query/', QueryController)]
+                                       [('/query/view/', QueryController)],
                                        debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 

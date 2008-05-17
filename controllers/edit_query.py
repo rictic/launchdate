@@ -7,7 +7,9 @@ from urllib import urlencode
 class EditQueryController(BaseController):
     def get(self):
         if "id" in self.request.params:
-            self.c['query'] = Query.get(self.request.params)
+            self.c['query'] = Query.get(self.request.params["id"])
+            if not self.c['query'].can_edit():
+                return self.redirect("/query/view/?id=%s" % query.key())
         elif list(self.request.params.items()) != []:
             self.c['query'] = Query.fromParams(self.request.params)
         self.render("edit_query.html")
@@ -16,9 +18,11 @@ class EditQueryController(BaseController):
         if "preview" in self.request.params:
             self.redirect("/query/edit/?%s" % urlencode(self.request.params))
         else:
+            if not self.c['query'].can_edit():
+                return self.redirect("/query/edit/" % query.key())
             query = Query.fromParams(self.request.params)
             query.save()
-            self.redirect("/query/view/?id=%s" % query.key)
+            self.redirect("/query/view/?id=%s" % query.key())
 
 
 

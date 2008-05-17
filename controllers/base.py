@@ -18,3 +18,4 @@ class BaseController(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'text/html; charset="UTF-8"'
         path = os.path.join(os.path.dirname(__file__), "..", "templates", template_name)
         self.response.out.write(template.render(path, self.c))
+        

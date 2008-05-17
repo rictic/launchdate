@@ -1,7 +1,7 @@
 {% extends "template.html" %}
-{% block content %}
-    なに？　まざか！
+{% block title %}Edit {{query.name}}{% endblock %}
+{% block content %}    
+    {% include "_query_form.html" %}
     
     {% include "_query_results.html"%}
-    {% include "_query_form.html" %}
 {% endblock %}

@@ -79,7 +79,9 @@ class Query(MyModel):
         
         return cal
         
-    
+    def pretty_query(self):
+        return json.encode(json.decode(self.query))
+
 
 class UserPrefs(db.Model):
     user = db.UserProperty(required=True)
@@ -177,8 +179,8 @@ def lexicographic_compare(left,right):
         r = left[i].__cmp__(right[i])
         if r != 0: return r
     return len(left).__cmp__(len(right))
-    
-    
+
+
 # [
 #   {
 #     "/type/reflect/any_master":{"id":"/en/shigeru_miyamoto"},

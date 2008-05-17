@@ -1,8 +1,18 @@
 {% extends "template.html" %}
+{% block title %}{{query.name}}{% endblock %}
 {% block content %}
     {% include "_query_results.html" %}
     
     <div>
-        Name – {{query.name}}
+        Details
+        <ul>
+            <li>Name – {{query.name}}</li>
+            <li>Owner – {{query.owner.nickname}}</li>
+            <li><pre>{{query.pretty_query}}</pre></li>
+        <ul>
     </div>
+    
+    {% if query.can_edit %}
+        <a href='/query/edit/?id={{query.key}}'>Edit</a>
+    {% endif %}
 {% endblock %}
